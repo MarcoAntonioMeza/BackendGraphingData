@@ -33,12 +33,12 @@ $grafico=$_REQUEST['grafico'];
                 <br>
                 <h3>Código del municipio <?php echo  $datos[0];?></h3>
                 <?php
-                $json=municipioHM($datos[0]);
-                if($json){
+
+                try {
+                    $json=municipioHM($datos[0]);
                     echo $json[0]." ".$json[1];
-                }
-                else{
-                    echo "Error";
+                } catch (Exception $e) {
+                    echo $e->getMessage();
                 }
                 ?>
                 
@@ -59,14 +59,12 @@ $grafico=$_REQUEST['grafico'];
                 <br>
                 <h3>Código del municipio <?php echo  $datos[0];?></h3>
                 <?php
-                $json=escolaridad($datos[0]);
-                if($json){
-                    
+                try {
+                    $json=escolaridad($datos[0]);
                     echo "<br/><h4>Porcentaje de personas de 15 años y más alfabetas</h4>";
                     echo "<h4>".$json."</h4>";
-                }
-                else{
-                    echo "Error";
+                } catch (Exception $e) {
+                    echo $e->getMessage();
                 }
                 ?>
 

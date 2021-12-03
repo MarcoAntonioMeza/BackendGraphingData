@@ -111,7 +111,13 @@ $giro=["--SELECCIONA GIRO--",
                     $data = $_POST['muni'];
                     $coordenadas = explode("/", $data);
                     $giroF=$_POST['giro'];
-                    economia($coordenadas[0],$giroF);
+                    try{
+                        economia($coordenadas[0],$giroF);
+                    }
+                    catch(Exception $e){
+                        echo "".$e->getMessage();
+                    }
+                    
                 }
                 ?>
             </div>

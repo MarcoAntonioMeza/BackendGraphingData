@@ -18,17 +18,28 @@ function consulta($url){
  *  En la posición 0 esta el valor de los hombres y en la posición 1 el valor de mujeres  
  */
 function municipioHM($claveMunicipo){
-    $key ="d2d25f1c-7c9e-cb75-aee5-93d58e13c23c";
-    
-    $url="https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/1002000002,1002000003/es/".$claveMunicipo."/true/BISE/2.0/".$key."?type=json";
-    $json=consulta($url);
-    $array=[];
-    $j=0;
-    foreach ($json['Series'] as $key ) {
-        $array[$j]= floatval($key['OBSERVATIONS'][0]['OBS_VALUE']);
-        $j++;
+    if($claveMunicipo!="-1"){
+        $key ="d2d25f1c-7c9e-cb75-aee5-93d58e13c23C";
+        $url="https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/1002000002,1002000003/es/".$claveMunicipo."/true/BISE/2.0/".$key."?type=json";
+        $json=consulta($url);
+        if($json){
+            $array=[];
+            $j=0;
+            foreach ($json['Series'] as $key ) {
+                $array[$j]= floatval($key['OBSERVATIONS'][0]['OBS_VALUE']);
+                $j++;
+            return $array;
+            }
+        }
+        else{
+            throw new Exception('INFORMACION NO DISPONIBLE :(');
+        }
     }
-    return $array;
+    else{
+        throw new Exception('SELECCIONA UN MUNICIPIO >:v');
+    }
+    
+
 }  
 
 /**
@@ -36,56 +47,64 @@ function municipioHM($claveMunicipo){
  * Regresa un String con el grado promedio de escolaridad de la población de 15 y más del municipio 
  */
 function escolaridad($claveMunicipo){
-    $key ="d2d25f1c-7c9e-cb75-aee5-93d58e13c23c";
-    
-    $url="https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/1005000038/es/"
-    .$claveMunicipo."/true/BISE/2.0/".$key."?type=json";
-    
-    $json=consulta($url);
+    if($claveMunicipo!="-1"){
+        $key ="d2d25f1c-7c9e-cb75-aee5-93d58e13c23c";
+        $url="https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/1005000038/es/"
+        .$claveMunicipo."/true/BISE/2.0/".$key."?type=json";
+        $json=consulta($url);
+        if($json){
+            return $json['Series'][0]['OBSERVATIONS'][0]['OBS_VALUE'];
+        }else{
+            throw new Exception("INFORMACION NO DISPONIBLE  :(");
+        }
+    }else{
+        throw new Exception("SELECCIONA  MUNICIPIO");
+        
+    }
 
-    return $json['Series'][0]['OBSERVATIONS'][0]['OBS_VALUE'];
-    
 }  
 
 /**
  * Recibe como parametro un String LatLng que hace referencia a la latitud y longitud del municipio.
  * Recibe como paramtro un String con el giro economico
  * Muestra una tabla con la informacion del giro 
+ * Lanza una excepción si no hay resulatados a mostrar o si la api de INEGI no esta disponible 
  */
 function economia($latLtn,$giro){
-    $token="d2d25f1c-7c9e-cb75-aee5-93d58e13c23c";
-    
+    $token="d2d25f1c-7c9e-cb75-aee5-93d58e13c23c";    
     $url="https://www.inegi.org.mx/app/api/denue/v1/consulta/Buscar/".$giro."/".$latLtn."/500/".$token;
     $json =consulta($url);
     if($json){
         //echo $json;
-        if ($json){
-
+        if (is_string($json)){
+            throw new Exception('¡SIN RESULTALDOS!');
         }
-        echo $url;
-        echo '<table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Nombre</th>
-                <th scope="col">Ubicación</th>
-                <th scope="col">Calle</th>
-                <th scope="col">CP</th>
-            </tr>
-        </thead>
-        <tbody>';
-        foreach ($json as $a) {
-            echo "
+        else{
+            //echo $url;
+            echo '<table class="table">
+            <thead>
                 <tr>
-                    <td scope='col'>".$a["Nombre"]."</td>
-                    <td scope='col'>".$a["Ubicacion"]."</td>
-                    <td scope='col'>".$a["Calle"]."</td>
-                    <td scope='col'>".$a["CP"]."</td>
-                </tr>";
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Ubicación</th>
+                    <th scope="col">Calle</th>
+                    <th scope="col">CP</th>
+                </tr>
+            </thead>
+            <tbody>';
+            foreach ($json as $a) {
+                echo "
+                    <tr>
+                        <td scope='col'>".$a["Nombre"]."</td>
+                        <td scope='col'>".$a["Ubicacion"]."</td>
+                        <td scope='col'>".$a["Calle"]."</td>
+                        <td scope='col'>".$a["CP"]."</td>
+                    </tr>";
+            }
+            echo'</tbody>
+            </table>';   
         }
-        echo'</tbody>
-    </table>';   
     }else{
-        echo "¡SIN RESULTADOS!";
+        throw new Exception('INFORMACION NO DISPONIBLE :(');
     }  
 } 
 ?>
